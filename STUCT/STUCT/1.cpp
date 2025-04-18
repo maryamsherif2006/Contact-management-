@@ -1,6 +1,6 @@
 #include <iostream>
 using namespace std;
-const int MAX = 100;
+#define MAX 100
 struct contact {
 	string name;
 	int mobile;
