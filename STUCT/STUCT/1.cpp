@@ -3,6 +3,9 @@
 #include <string>
 using namespace std;
 #define MAX 100
+
+
+
 struct contact {
 	string name;
 	int mobile;
@@ -13,6 +16,7 @@ struct user {
 	string pass;
 	contact contacts[MAX];
 };
+<<<<<<< HEAD
 user users[MAX]; //array to store all users 
 
 int userCount = 0;
@@ -104,10 +108,23 @@ int loginUser() {
 		cout << " Invalid username or password . \n";
 	}
 	return index;//?????? ????? (int) ???? ???? ??? ???????? ?????? ? ???? ??????? ?? ????? ?????? ....
+=======
+
+void add()
+{
+	contact cont;
+	cout << "Enter the name : ";
+	cin >> cont.name;
+	cout << "Enter the Mobile Number : ";
+	cin >> cont.mobile;
+	cout << "Enter the E-mail : ";
+	cin >> cont.email;
+>>>>>>> salsabila
 }
 
 int main()
 {
+<<<<<<< HEAD
 	int choice;
 	int currentUser = -1;
 
@@ -137,4 +154,22 @@ int main()
 		}
 	}
 	
+=======
+	int choise;
+	cout << "Choose the Operation : \n";
+	cout << "1-Add\n";
+	cout << "2-Delete\n";
+	cout << "3-Edit\n";
+	cout << "4-Search\n";
+	cin >> choise;
+
+	switch (choise)
+	{
+	case 1:
+		add();
+		break;
+
+
+	}
+>>>>>>> salsabila
 }
