@@ -33,9 +33,9 @@ void Deletefn(int currentUser)
 		return;
 	}
 
-	contact cont;     //store the number we want to delete
+	int contnumber;     //store the number we want to delete
 	cout << "Enter the number of contact you want to delete : \n";
-	cin >> cont.mobile;
+	cin >> contnumber;
 	if (cont.mobile <= 0) 
 	{
 		cout << "Invalid number, please try again.\n";
@@ -44,7 +44,7 @@ void Deletefn(int currentUser)
 	bool found = false; 
 	for (int i = 0;i < users[currentUser].contactCounter;i++)
 	{       // search to find the number and delete it
-		if (cont.mobile == users[currentUser].contacts[i].mobile)
+		if (contnumber == users[currentUser].contacts[i].mobile)
 		{
 			for (int j = i;j < users[currentUser].contactCounter - 1;j++) 
 			{
