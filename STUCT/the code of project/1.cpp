@@ -291,8 +291,9 @@ int main()
 			Deletefn(currentUser);
 			break;
 			
+		case 4 :
 		addcontact();
-		break;	
+		break;
 
 
 		
