@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <string>
 using namespace std;
@@ -20,7 +20,99 @@ user users[MAX]; //array to store all users
 int userCount = 0;
 
 
-void Deletefn(int currentUser) 
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+// تعريف Struct لتخزين البيانات
+struct Contact {
+	string name;
+	string phone;
+	string email;
+};
+
+// تحميل البيانات من الملف
+void loadContacts(Contact contacts[], int& count) {
+	ifstream inFile("contacts.txt");
+	count = 0;
+
+	while (inFile >> ws && getline(inFile, contacts[count].name)) {
+		getline(inFile, contacts[count].phone);
+		getline(inFile, contacts[count].email);
+		count++;
+	}
+
+	inFile.close();
+}
+
+// حفظ البيانات في الملف
+void saveContacts(Contact contacts[], int count) {
+	ofstream outFile("contacts.txt");
+
+	for (int i = 0; i < count; i++) {
+		outFile << contacts[i].name << endl;
+		outFile << contacts[i].phone << endl;
+		outFile << contacts[i].email << endl;
+	}
+
+	outFile.close();
+}
+
+// تعديل جهة اتصال
+void editContact(Contact contacts[], int count) {
+	string searchName;
+	cout << "Enter the name of the contact to edit: ";
+	cin.ignore();
+	getline(cin, searchName);
+
+	bool found = false;
+
+	for (int i = 0; i < count; i++) {
+		if (contacts[i].name == searchName) {
+			found = true;
+
+			cout << "\nCurrent Info:\n";
+			cout << "1. Name : " << contacts[i].name << endl;
+			cout << "2. Phone: " << contacts[i].phone << endl;
+			cout << "3. Email: " << contacts[i].email << endl;
+
+			int choice;
+			cout << "\nWhat do you want to edit? (1-Name, 2-Phone, 3-Email): ";
+			cin >> choice;
+			cin.ignore();
+
+			switch (choice) {
+			case 1:
+				cout << "Enter new name: ";
+				getline(cin, contacts[i].name);
+				break;
+			case 2:
+				cout << "Enter new phone: ";
+				getline(cin, contacts[i].phone);
+				break;
+			case 3:
+				cout << "Enter new email: ";
+				getline(cin, contacts[i].email);
+				break;
+			default:
+				cout << "Invalid choice!\n";
+				return;
+			}
+
+			cout << "\nContact updated successfully!\n";
+			break;
+		}
+	}
+
+	if (!found) {
+		cout << "\nContact not found!\n";
+	}
+}
+
+
+
+
+void Deletefn(int currentUser)
 {
 	if (currentUser == -1)
 	{ //to make sure the user already has an account
@@ -36,17 +128,17 @@ void Deletefn(int currentUser)
 	int contnumber;     //store the number we want to delete
 	cout << "Enter the number of contact you want to delete : \n";
 	cin >> contnumber;
-	if (cont.mobile <= 0) 
+	if (cont.mobile <= 0)
 	{
 		cout << "Invalid number, please try again.\n";
 		return;
 	}
-	bool found = false; 
+	bool found = false;
 	for (int i = 0;i < users[currentUser].contactCounter;i++)
 	{       // search to find the number and delete it
 		if (contnumber == users[currentUser].contacts[i].mobile)
 		{
-			for (int j = i;j < users[currentUser].contactCounter - 1;j++) 
+			for (int j = i;j < users[currentUser].contactCounter - 1;j++)
 			{
 				users[currentUser].contacts[j] = users[currentUser].contacts[j + 1];
 			}
@@ -55,12 +147,12 @@ void Deletefn(int currentUser)
 			cout << "Contact deleted successfully.\n";
 			break;
 		}
- 	}
+	}
 	if (!found)
 	{
 		cout << "Contact not found.\n";
 	}
-	ofstream outfile("contacts_"+ users[currentUser].username + ".txt");  //to store the new contacts in the user's contacts file
+	ofstream outfile("contacts_" + users[currentUser].username + ".txt");  //to store the new contacts in the user's contacts file
 	if (outfile.is_open())
 	{
 		for (int i = 0;i < users[currentUser].contactCounter;i++)
@@ -75,7 +167,7 @@ void Deletefn(int currentUser)
 	else
 		cout << "Error updating Contact file\n";
 
-    
+
 }
 
 
@@ -149,7 +241,7 @@ int loginUser() {
 		while (infile >> u >> p)
 		{
 			if (u == username && p == password) {
-				index = i; // array???? ??? ???????? ?? ?? 
+				index = i; 
 				break;
 			}
 			i++;
@@ -163,10 +255,10 @@ int loginUser() {
 	else {
 		cout << " Invalid username or password . \n";
 	}
-	return index;//?????? ????? (int) ???? ???? ??? ???????? ?????? ? ???? ??????? ?? ????? ?????? ....
+	return index;
 }
 
-int contactcount=0;
+int contactcount = 0;
 
 bool isvalidphone(const string& phone)  //function to check validity of phone number;
 {
@@ -211,13 +303,71 @@ void savecontactToFile() //function to save the new contact to the file
 }
 
 
+void categorizeContact(int currentUser) {
+	if (currentUser == -1) {
+		cout << "Please login first!\n";
+		return;
+	}
+	if (users[currentUser].contactCounter == 0) {
+		cout << "No contacts to categorize.\n";
+		return;
+	}
+
+	int index;
+	cout << "Enter contact number to categorize (starting from 0): ";
+	cin >> index;
+	cin.ignore();
+
+	if (index >= 0 && index < users[currentUser].contactCounter) {
+		cout << "Enter category for this contact (family/friends/work): ";
+		getline(cin, users[currentUser].contacts[index].category);
+		cout << "Category added successfully!\n";
+	}
+	else {
+		cout << "Invalid contact number.\n";
+	}
+}
+
+void filterByCategory(int currentUser) {
+	if (currentUser == -1) {
+		cout << "Please login first!\n";
+		return;
+	}
+	if (users[currentUser].contactCounter == 0) {
+		cout << "No contacts found.\n";
+		return;
+	}
+
+	cin.ignore();
+	string cat;
+	cout << "Enter category to filter: ";
+	getline(cin, cat);
+
+	bool found = false;
+
+	cout << "\nContacts in category: " << cat << endl;
+
+	for (int i = 0; i < users[currentUser].contactCounter; i++) {
+		if (users[currentUser].contacts[i].category == cat) {
+			cout << "--------------------\n";
+			cout << "Name: " << users[currentUser].contacts[i].name << endl;
+			cout << "Phone: " << users[currentUser].contacts[i].mobile << endl;
+			cout << "Email: " << users[currentUser].contacts[i].email << endl;
+			found = true;
+		}
+	}
+
+	if (!found) {
+		cout << "No contacts found in this category.\n";
+	}
+}
 
 
 
-void addcontact()   //function to add new contact;
+void addcontact()   
 {
-	
-	
+
+
 	cout << "Enter the Name : ";
 	getline(cin, contactt[contactcount].name);
 
@@ -244,19 +394,10 @@ void addcontact()   //function to add new contact;
 
 
 	savecontactToFile();
-	
+
 
 	contactcount++;
 }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -271,45 +412,57 @@ int main()
 		cout << "2. Login \n";
 		cout << "3. Delete \n";
 		cout << "4. Add \n";
-		cout << "5. Exist \n";
+		cout << "5. categorize \n";
+		cout << "6. filter by categorize \n";
+		cout << "7. edit \n";
+		cout << "8. Exist \n";
 		cout << "Enter your choice : \n";
 		cin >> choice;
 
-		switch (choice){
-		case 1 :
+		switch (choice) {
+		case 1:
 			registerUser();
 			break;
-		
-		case 2 : 
+
+		case 2:
 			currentUser = loginUser();
 			if (currentUser != -1) {
 				cout << " Welcome " << users[currentUser].username << " \n";
 			}
 			break;
-		
-		case 3 : 
+
+		case 3:
 			Deletefn(currentUser);
 			break;
-			
-		case 4 :
-		addcontact();
-		break;
 
+		case 4:
+			addcontact(currentUser);
+			break;
 
-		
-		case 5 :
-         cout << " Goodbye \n";
+		case 5:
+			categorizeContact(currentUser);
+			break;
+		 
+		case 6:
+			filterByCategory(currentUser);
+			break;
+
+		case 7:
+			editContact();
+
+		case 8:
+			cout << " Goodbye \n";
 			break;
 		default:
 			cout << " Invalid choice, Try again. \n";
-		
+
+		}
+
+
+
+
+
+
+
+		return 0;
 	}
-
-	
-
-
-
-
-
-	return 0;
-}
