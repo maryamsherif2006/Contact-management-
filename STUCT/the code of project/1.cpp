@@ -69,8 +69,14 @@ void saveData() {
 }
 
 void searchContact(int currentUser) {
+	if (users[currentUser].contactCounter == 0) // to make sure if the user has contacts
+	{
+		cout << "No contacts found.\n";
+		return;
+	}
+
 	cout << "\nEnter what you want to search for: \n";
-	cout << "Search by: 1-Name\n 2-Phone\n 3-Email.\n" ;
+	cout << "Search by: \n1-Name\n 2-Phone\n 3-Email.\n" ;
     int choice;
     cin >> choice;
 	cin.ignore();
@@ -94,10 +100,10 @@ void searchContact(int currentUser) {
 			(choice == 3 && users[currentUser].contacts[i].email == searchKey)) {
 
 			cout << "\nContact Found!\n" << endl;
-			cout << "Name: \n" << users[currentUser].contacts[i].name << endl;
-			cout << "Phone: \n" << users[currentUser].contacts[i].mobile << endl;
-			cout << "Email: \n" << users[currentUser].contacts[i].email << endl;
-			cout << "Category \n" << users[currentUser].contacts[i].category << endl;
+			cout << "Name: " << users[currentUser].contacts[i].name << endl;
+			cout << "Phone: " << users[currentUser].contacts[i].mobile << endl;
+			cout << "Email: " << users[currentUser].contacts[i].email << endl;
+			cout << "Category:" << users[currentUser].contacts[i].category << endl;
 			found = true;
 			break;
 		}
@@ -140,7 +146,7 @@ void editContact(int currentUser) {
 			cout << "3. Email: " << users[currentUser].contacts[i].email << endl;
 
 			int choice;
-			cout << "\nWhat do you want to edit? (1-Name, 2-Phone, 3-Email): \n";
+			cout << "What do you want to edit? (1-Name, 2-Phone, 3-Email): \n";
 			cin >> choice;
 			cin.ignore();
 
@@ -215,8 +221,9 @@ void Deletefn(int currentUser)
 void registerUser() {
 
 	string username, password;
+	cin.ignore();
 	cout << " Enter a new username :  ";
-	cin >> username;
+	getline(cin , username);
 
 	// chec if username already exists 
 	for (int i = 0; i < userCount; i++) {
@@ -227,8 +234,10 @@ void registerUser() {
 	}
 
 	// Validate password 
+	
 	cout << " Enter a password ( at least 4 characters )\n";
-	cin >> password;
+    cin.ignore();
+	getline(cin, password);
 
 	while (password.length() < 4) {
 		cout << " Password is too short . Try again : \n";
@@ -244,9 +253,12 @@ void registerUser() {
 int loginUser() {
 	string username, password;
 	cout << " Enter your username : \n";
-	cin >> username;
+	cin.ignore();
+	getline(cin , username);
 	cout << " Enter your password : \n";
-	cin >> password;
+	cin.ignore();
+	getline(cin, password);
+	
 
 	int userIndex = User_Authentication(username, password);
 	if (userIndex != -1) {
@@ -289,18 +301,21 @@ void categorizeContact(int currentUser) {
 		cout << "No contacts to categorize.\n";
 		return;
 	}
-
-	int index;
-	cout << "Enter contact number to categorize (starting from 0): ";
-	cin >> index;
+	string number;
+	cout << "Enter contact number to categorize :\n";
 	cin.ignore();
-
-	if (index >= 0 && index < users[currentUser].contactCounter) {
+	cin >> number;
+	bool found = false;
+	for (int i = 0;i <= users[currentUser].contactCounter;i++) {
+		if (number == users[currentUser].contacts[i].mobile) {
 		cout << "Enter category for this contact (family/friends/work): ";
-		getline(cin, users[currentUser].contacts[index].category);
+		cin >> users[currentUser].contacts[i].category;
 		cout << "Category added successfully!\n";
+		found = true;
+		}
+		break;
 	}
-	else {
+	if (!found) {
 		cout << "Invalid contact number.\n";
 	}
 }
@@ -375,63 +390,77 @@ void addcontact(int currentUser)
 	cout << "Contact added successfully!\n";
 }
 
-int main()
-{
+int main() {
 	loadData();
 	int choice;
 	int currentUser = -1;
 
-	while (true) {
-		cout << " \n ----------Contact Management System----------\n";
-		cout << "1: Register \n ";
-		cout << "2: Login \n";
-		cout << "3: Delete Contact \n";
-		cout << "4: Add Contact \n";
-		cout << "5: Categorize Contact \n";
-		cout << "6: Filter by Categorize \n";
-		cout << "7: Edit Contact \n";
-		cout << "8: Search Contact \n";
-		cout << "9: Exist \n";
-		cout << "Enter your choice : \n";
-		cin >> choice;
+	do {
+		cout << "\n----------Contact Management System----------\n";
+		if (currentUser == -1) {
+			// Pre-login menu
+			cout << "1: Register\n";
+			cout << "2: Login\n";
+			cout << "3: Exit\n";
+			cout << "Enter your choice: ";
+			cin >> choice;
 
-		switch (choice) {
-		case 1:
-			registerUser();
-			break;
-		case 2:
-			currentUser = loginUser();
-			if (currentUser != -1) {
-				cout << " Welcome " << users[currentUser].username << " \n";
+			switch (choice) {
+			case 1:
+				registerUser();
+				break;
+			case 2:
+				currentUser = loginUser();
+				if (currentUser != -1) {
+					cout << "Welcome " << users[currentUser].username << "!\n";
+				}
+				break;
+			case 3:
+				saveData();
+				cout << "Goodbye.\n";
+				return 0;
+			default:
+				cout << "Invalid choice, try again.\n";
 			}
-			break;
-		case 3:
-			Deletefn(currentUser);
-			break;
-		case 4:
-			addcontact(currentUser);
-			break;
-
-		case 5:
-			categorizeContact(currentUser);
-			break;
-
-		case 6:
-			filterByCategory(currentUser);
-			break;
-		case 7:
-			editContact(currentUser);
-          break;
-		case 8:
-			searchContact(currentUser);
-			break;
-		case 9:
-			saveData();
-			cout << " Goodbye. \n";
-			break;
-		default:
-			cout << " Invalid choice, Try again. \n";
-
 		}
-	}
+		else {
+			// Post-login menu
+			cout << "3: Delete Contact\n";
+			cout << "4: Add Contact\n";
+			cout << "5: Categorize Contact\n";
+			cout << "6: Filter by Category\n";
+			cout << "7: Edit Contact\n";
+			cout << "8: Search Contact\n";
+			cout << "9: Logout and Exit\n";
+			cout << "Enter your choice: ";
+			cin >> choice;
+
+			switch (choice) {
+			case 3 :
+				Deletefn(currentUser);
+				break;
+			case 4 :
+				addcontact(currentUser); // Fixed function name
+				break;
+			case 5 :
+				categorizeContact(currentUser);
+				break;
+			case 6 :
+				filterByCategory(currentUser);
+				break;
+			case 7 :
+				editContact(currentUser);
+				break;
+			case 8 :
+				searchContact(currentUser);
+				break;
+			case 9 :
+				saveData();
+				cout << "Goodbye.\n";
+				return 0;
+			default:
+				cout << "Invalid choice, try again.\n";
+			}
+		}
+	} while (true); // Loop continues until an exit option is chosen
 }
