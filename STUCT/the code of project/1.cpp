@@ -1,8 +1,11 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include<algorithm>
+
 using namespace std;
 #define MAX 100
+
 struct contact {
 	string name;
 	string mobile;
@@ -16,7 +19,7 @@ struct user {
 	int contactCounter = 0;
 };
 
-user users[MAX]; //array to store all users 
+user users[MAX]; 
 int userCount = 0;
 
 void loadData() {
@@ -76,12 +79,10 @@ void searchContact(int currentUser) {
 	}
 
 	cout << "\nEnter what you want to search for: \n";
-	cout << "Search by: \n1-Name\n 2-Phone\n 3-Email.\n" ;
-    int choice;
-    cin >> choice;
+	cout << "Search by: \n1-Name\n 2-Phone\n 3-Email.\n";
+	int choice;
+	cin >> choice;
 	cin.ignore();
-	
-	// إضافة رسالة توضح للمستخدم ماذا سيبحث عنه
 	if (choice == 1) {
 		cout << "Searching by Name...\n" << endl;
 	}
@@ -91,12 +92,12 @@ void searchContact(int currentUser) {
 	else if (choice == 3) {
 		cout << "Searching by Email...\n" << endl;
 	}
-    string searchKey;
+	string searchKey;
 	getline(cin, searchKey);
-    bool found = false;
+	bool found = false;
 	for (int i = 0; i < users[currentUser].contactCounter; i++) {
-		if ((choice == 1 && users[currentUser].contacts[i].name == searchKey)||
-			(choice == 2 && users[currentUser].contacts[i].mobile == searchKey)||
+		if ((choice == 1 && users[currentUser].contacts[i].name == searchKey) ||
+			(choice == 2 && users[currentUser].contacts[i].mobile == searchKey) ||
 			(choice == 3 && users[currentUser].contacts[i].email == searchKey)) {
 
 			cout << "\nContact Found!\n" << endl;
@@ -187,7 +188,7 @@ void Deletefn(int currentUser)
 		return;
 	}
 
-	string contnumber;     //store the number we want to delete
+	string contnumber;    
 	cout << "Enter the number of contact you want to delete : \n";
 	cin.ignore();
 	getline(cin, contnumber);
@@ -223,7 +224,7 @@ void registerUser() {
 	string username, password;
 	cin.ignore();
 	cout << " Enter a new username :  ";
-	getline(cin , username);
+	getline(cin, username);
 
 	// chec if username already exists 
 	for (int i = 0; i < userCount; i++) {
@@ -234,9 +235,9 @@ void registerUser() {
 	}
 
 	// Validate password 
-	
+
 	cout << " Enter a password ( at least 4 characters )\n";
-    cin.ignore();
+	cin.ignore();
 	getline(cin, password);
 
 	while (password.length() < 4) {
@@ -254,11 +255,11 @@ int loginUser() {
 	string username, password;
 	cout << " Enter your username : \n";
 	cin.ignore();
-	getline(cin , username);
+	getline(cin, username);
 	cout << " Enter your password : \n";
 	cin.ignore();
 	getline(cin, password);
-	
+
 
 	int userIndex = User_Authentication(username, password);
 	if (userIndex != -1) {
@@ -286,8 +287,8 @@ bool isvalidphone(const string& phone)  //function to check validity of phone nu
 
 bool isvalidemail(const string& email)  //function to check validity of email ;
 {
-	size_t at_pos = email.find('@');   //evalute the position of '@' in the email ;
-	size_t dot_pos = email.rfind('.');  //evaluate the position of '.' in the email;
+	size_t at_pos = email.find('@');   
+	size_t dot_pos = email.rfind('.');  
 
 	return (at_pos != string::npos) &&
 		(dot_pos != string::npos) &&
@@ -308,10 +309,10 @@ void categorizeContact(int currentUser) {
 	bool found = false;
 	for (int i = 0;i <= users[currentUser].contactCounter;i++) {
 		if (number == users[currentUser].contacts[i].mobile) {
-		cout << "Enter category for this contact (family/friends/work): ";
-		cin >> users[currentUser].contacts[i].category;
-		cout << "Category added successfully!\n";
-		found = true;
+			cout << "Enter category for this contact (family/friends/work): ";
+			cin >> users[currentUser].contacts[i].category;
+			cout << "Category added successfully!\n";
+			found = true;
 		}
 		break;
 	}
@@ -326,10 +327,10 @@ void filterByCategory(int currentUser) {
 		return;
 	}
 
-	
+
 	string cat;
 	cout << "Enter category to filter: ";
-    cin.ignore();
+	cin.ignore();
 	getline(cin, cat);
 
 	bool found = false;
@@ -383,11 +384,44 @@ void addcontact(int currentUser)
 		}
 	} while (!isvalidemail(users[currentUser].contacts[users[currentUser].contactCounter].email));
 
-	cout << "Enter the category : ";
+	cout << "Enter the category (family/friends/work) : ";
 	getline(cin, users[currentUser].contacts[users[currentUser].contactCounter].category);
 
 	users[currentUser].contactCounter++;
 	cout << "Contact added successfully!\n";
+}
+
+
+bool compareContactsByName(const contact& a, const contact& b)
+{
+	return a.name < b.name;
+}
+
+void sortAlphabetically(user& users)
+{
+	sort(users.contacts, users.contacts + users.contactCounter, compareContactsByName);
+}
+
+void displaycontacts(int currentuser)
+
+{
+	if (currentuser == -1 || users[currentuser].contactCounter == 0)
+	{
+		cout << "No contacts to display.\n";
+		return;
+	}
+
+	sortAlphabetically(users[currentuser]);
+
+	for (int i = 0;i < users[currentuser].contactCounter;i++)
+	{
+
+		cout << "Contact Number : " << i + 1 << endl;
+		cout << users[currentuser].contacts[i].name << endl;
+		cout << users[currentuser].contacts[i].mobile << endl;
+		cout << users[currentuser].contacts[i].email << endl;
+		cout << users[currentuser].contacts[i].category << endl;
+	}
 }
 
 int main() {
@@ -425,36 +459,41 @@ int main() {
 		}
 		else {
 			// Post-login menu
-			cout << "3: Delete Contact\n";
-			cout << "4: Add Contact\n";
-			cout << "5: Categorize Contact\n";
-			cout << "6: Filter by Category\n";
-			cout << "7: Edit Contact\n";
-			cout << "8: Search Contact\n";
-			cout << "9: Logout and Exit\n";
+			cout << "1: Delete Contact\n";
+			cout << "2: Add Contact\n";
+			cout << "3: Categorize Contact\n";
+			cout << "4: Filter by Category\n";
+			cout << "5: Edit Contact\n";
+			cout << "6: Search Contact\n";
+			cout << "7: Displaying the Contacts\n";
+			cout << "8: Logout and Exit\n";
 			cout << "Enter your choice: ";
 			cin >> choice;
 
 			switch (choice) {
-			case 3 :
+			case 1:
 				Deletefn(currentUser);
 				break;
-			case 4 :
-				addcontact(currentUser); // Fixed function name
+			case 2:
+				addcontact(currentUser); 
 				break;
-			case 5 :
+			case 3:
 				categorizeContact(currentUser);
 				break;
-			case 6 :
+			case 4:
 				filterByCategory(currentUser);
 				break;
-			case 7 :
+			case 5:
 				editContact(currentUser);
 				break;
-			case 8 :
+			case 6:
 				searchContact(currentUser);
 				break;
-			case 9 :
+			case 7:
+				cout << "\n\nDisplaying Contacts.....\n\n";
+				displaycontacts(currentUser);
+				break;
+			case 8:
 				saveData();
 				cout << "Goodbye.\n";
 				return 0;
@@ -462,5 +501,5 @@ int main() {
 				cout << "Invalid choice, try again.\n";
 			}
 		}
-	} while (true); // Loop continues until an exit option is chosen
+	} while (true); 
 }
